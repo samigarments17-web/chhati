@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuvConnect</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        /* CSS3 STYLES */
+
+        /* Basic Resets and Theming */
+        :root {
+            --primary-color: #ff8a8a;
+            --secondary-color: #a265d3;
+            --background-gradient: linear-gradient(135deg, #ffdde1, #ee9ca7);
+            --text-color: #333;
+            --light-text-color: #fff;
+            --container-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --border-radius: 15px;
+            --online-indicator: #2ecc71;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--background-gradient);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Main App Container */
+        .app-shell {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            max-height: 950px;
+            background: #f9f9f9;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Authentication Screen Styles */
+        #auth-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 2rem;
+            background: var(--background-gradient);
+            color: var(--light-text-color);
+            text-align: center;
+        }
+        
+        .auth-form h2 {
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .auth-form p {
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--light-text-color);
+            font-size: 1rem;
+            outline: none;
+            transition: background 0.3s;
+        }
+        
+        .auth-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .auth-input:focus {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 50px;
+            background: var(--light-text-color);
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .auth-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .toggle-form-link {
+            color: var(--light-text-color);
+            cursor: pointer;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        /* Main App Interface Styles */
+        #app-container {
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            padding-bottom: 80px; /* Space for nav bar */
+        }
+        
+        /* General Screen Styles */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home Screen */
+        .online-users-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        
+        .online-users-stack {
+            display: flex;
+            align-items: center;
+        }
+
+        .online-user-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #eee;
+            border: 2px solid white;
+            margin-left: -15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .online-user-icon:first-child {
+            margin-left: 0;
+        }
+
+        .online-indicator {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background-color: var(--online-indicator);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .view-all-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.5rem;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .search-bar {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border-radius: 50px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .search-bar i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* User List Styles */
+        .user-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: var(--container-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .user-card-emoji {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f0f0f0;
+            border-radius: 50%;
+        }
+
+        .user-card-info {
+            flex-grow: 1;
+        }
+
+        .user-card-info h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .user-card-info p {
+            font-size: 0.9rem;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        
+        .action-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.8rem 0;
+            border-top: 1px solid #eee;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .nav-btn span {
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .nav-btn.active {
+            color: var(--secondary-color);
+            transform: translateY(-5px);
+        }
+
+        /* Profile Screen */
+        .profile-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-emoji-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        #profile-emoji-display {
+            font-size: 6rem;
+            background: #f0f0f0;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 1rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .profile-emoji-wrapper .edit-icon {
+            position: absolute;
+            bottom: 15px;
+            right: 5px;
+            background: var(--secondary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+        }
+        
+        .profile-form .form-group {
+            text-align: left;
+        }
+
+        .profile-form label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .profile-form input, .profile-form textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            resize: none;
+        }
+
+        .profile-actions {
+            margin-top: 1.5rem;
+        }
+
+        .secondary-btn {
+             background: #eee;
+             color: var(--text-color);
+             margin-top: 1rem;
+        }
+
+        /* Modals (Overlay popups) */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            display: none; /* Changed */
+            justify-content: center;
+            align-items: flex-end; /* Align to bottom for mobile */
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-height: 90%;
+            border-radius: 25px 25px 0 0;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #888;
+        }
+
+        /* Emoji Picker Modal */
+        #emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+            gap: 1rem;
+            overflow-y: auto;
+            max-height: 400px;
+            padding: 1rem 0;
+        }
+
+        .emoji-option {
+            font-size: 2rem;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .emoji-option:hover {
+            transform: scale(1.2);
+        }
+
+        /* Chat Modal */
+        #chat-modal .modal-content {
+            height: 90%;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-bubble {
+            max-width: 75%;
+            padding: 0.8rem 1rem;
+            border-radius: 20px;
+            margin-bottom: 0.5rem;
+            word-wrap: break-word;
+        }
+        
+        .chat-bubble.sent {
+            background: var(--secondary-color);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .chat-bubble.received {
+            background: #f1f0f0;
+            color: var(--text-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .chat-input-area {
+            display: flex;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .chat-input-area input {
+            flex-grow: 1;
+            padding: 0.8rem 1rem;
+            border-radius: 50px;
+            border: 1px solid #ddd;
+            margin-right: 0.5rem;
+        }
+
+        .chat-input-area button {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-color);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .chat-header-options button {
+             background: none;
+             border: none;
+             font-size: 1.5rem;
+             color: #666;
+             cursor: pointer;
+             margin-left: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-shell">
+        
+        <div id="auth-container">
+            <div id="login-form" class="auth-form">
+                <h2>Welcome Back <i class="bi bi-heart-fill" style="color: white; font-size: 2rem;"></i></h2>
+                <p>Sign in to find your match!</p>
+                <div class="form-group">
+                    <i class="bi bi-envelope-fill"></i>
+                    <input type="email" id="login-email" class="auth-input" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <i class="bi bi-lock-fill"></i>
+                    <input type="password" id="login-password" class="auth-input" placeholder="Password" required>
+                </div>
+                <button id="login-btn" class="auth-btn">Login</button>
+                <p class="toggle-form-link" onclick="toggleAuthForms()">Don't have an account? Sign Up</p>
+            </div>
+            
+            <div id="signup-form" class="auth-form" style="display: none;">
+                <h2>Create Account <i class="bi bi-person-plus-fill" style="color: white; font-size: 2rem;"></i></h2>
+                <p>Join our community today!</p>
+                 <div class="form-group">
+                    <i class="bi bi-person-fill"></i>
+                    <input type="text" id="signup-name" class="auth-input" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <i class="bi bi-envelope-fill"></i>
+                    <input type="email" id="signup-email" class="auth-input" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <i class="bi bi-lock-fill"></i>
+                    <input type="password" id="signup-password" class="auth-input" placeholder="Password" required>
+                </div>
+                <button id="signup-btn" class="auth-btn">Sign Up</button>
+                <p class="toggle-form-link" onclick="toggleAuthForms()">Already have an account? Login</p>
+            </div>
+        </div>
+
+        <div id="app-container">
+            <main class="main-content">
+                <div id="home-screen" class="screen active">
+                    <div class="online-users-header">
+                        <div id="online-users-stack-container" class="online-users-stack">
+                            </div>
+                        <button id="view-all-online-btn" class="view-all-btn">+</button>
+                    </div>
+                    <div class="search-bar">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="search-input" placeholder="Search by name...">
+                    </div>
+                    <h2 class="section-title">Discover People</h2>
+                    <div id="all-users-list" class="user-list">
+                        <p>Loading users...</p>
+                    </div>
+                </div>
+
+                <div id="messages-screen" class="screen">
+                    <h2 class="section-title">Chats</h2>
+                    <div id="chats-list" class="user-list">
+                        <p>You have no active chats yet.</p>
+                    </div>
+                </div>
+
+                <div id="friends-screen" class="screen">
+                    <h2 class="section-title">My Friends</h2>
+                    <div id="friends-list" class="user-list">
+                        <p>You haven't added any friends yet.</p>
+                    </div>
+                </div>
+
+                <div id="profile-screen" class="screen">
+                    <div class="profile-header">
+                        <div class="profile-emoji-wrapper" id="profile-emoji-picker-btn">
+                            <div id="profile-emoji-display">🧑‍🦰</div>
+                            <span class="edit-icon"><i class="bi bi-pencil-fill"></i></span>
+                        </div>
+                    </div>
+                    <div class="profile-form">
+                        <div class="form-group">
+                            <label for="profile-name">Name</label>
+                            <input type="text" id="profile-name" placeholder="Your Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-bio">Bio</label>
+                            <textarea id="profile-bio" rows="4" placeholder="Tell us something about you..."></textarea>
+                        </div>
+                        <div class="profile-actions">
+                            <button id="save-profile-btn" class="auth-btn">Save Changes</button>
+                            <button id="blocked-users-btn" class="auth-btn secondary-btn">View Blocked Users</button>
+                            <button id="logout-btn" class="auth-btn secondary-btn" style="background: #ff5c5c; color: white;">Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <nav class="nav-bar">
+                <button class="nav-btn active" data-target="home-screen"><i class="bi bi-house-heart-fill"></i><span>Home</span></button>
+                <button class="nav-btn" data-target="messages-screen"><i class="bi bi-chat-heart-fill"></i><span>Messages</span></button>
+                <button class="nav-btn" data-target="friends-screen"><i class="bi bi-people-fill"></i><span>Friends</span></button>
+                <button class="nav-btn" data-target="profile-screen"><i class="bi bi-person-circle"></i><span>Profile</span></button>
+            </nav>
+        </div>
+        
+        <div id="online-users-modal" class="modal-overlay" style="align-items: center;">
+             <div class="modal-content" style="border-radius: var(--border-radius); max-height: 70%;">
+                <div class="modal-header">
+                    <h3>Online Now</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div id="modal-online-users-list" class="user-list" style="overflow-y: auto; padding: 1rem 0;">
+                    </div>
+            </div>
+        </div>
+        
+        <div id="emoji-picker-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Choose Your Emoji</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div id="emoji-grid">
+                    </div>
+            </div>
+        </div>
+
+        <div id="chat-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="chat-with-name">Chat</h3>
+                    <div class="chat-header-options">
+                        <button id="block-user-btn" title="Block User"><i class="bi bi-slash-circle-fill"></i></button>
+                        <button class="close-modal-btn">&times;</button>
+                    </div>
+                </div>
+                <div id="chat-messages-container" class="chat-messages">
+                    </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-message-input" placeholder="Type a message...">
+                    <button id="send-chat-message-btn"><i class="bi bi-send-fill"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="blocked-users-modal" class="modal-overlay">
+             <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Blocked Users</h3>
+                    <button class="close-modal-btn">&times;</button>
+                </div>
+                <div id="blocked-users-list-container" class="user-list" style="overflow-y: auto;">
+                    </div>
+            </div>
+        </div>
+
+    </div><script type="module">
+        // 🔥 To make this app work, you MUST import your own Firebase modules.
+        // Example:
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+        import { getDatabase, ref, set, get, onValue, off, push, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+        // 🔥 PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE 🔥
+       const firebaseConfig = {
+  apiKey: "AIzaSyA4eW-XwbTQckGzIRLY1jwqsYAKQ9zwWck",
+  authDomain: "sami-chatting.firebaseapp.com",
+  databaseURL: "https://sami-chatting-default-rtdb.firebaseio.com",
+  projectId: "sami-chatting",
+  storageBucket: "sami-chatting.firebasestorage.app",
+  messagingSenderId: "518896478405",
+  appId: "1:518896478405:web:03067f69f99bb92d1168ac"
+};
+
+        
+        // Initialize Firebase and get services
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // DOM Elements
+        const authContainer = document.getElementById('auth-container');
+        const appContainer = document.getElementById('app-container');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        
+        let currentUserData = null; // To store logged-in user's profile data
+        let currentChatPartnerId = null; // To store ID of person being chatted with
+        let messageListeners = {}; // To keep track of active chat listeners
+        let allUsers = {}; // Cache for all users
+
+        // Emojis for profile picture
+        const profileEmojis = ['😍', '🔥', '😢', '😁', '😘', '😜', '😆', '♥️', '😎', '🥸', '🤑', '🥰', '🤡', '😙', '🤗', '🤩', '🤪', '🥳', '🤠', '🤬', '👻', '👹', '👺', '👽', '😻', '💋', '👀', '🧒', '👩‍🦱', '👨‍🦰', '👨‍🦳', '🧔', '🥷', '👮', '👳', '👷', '👲', '🕵‍♀️', '👩‍🎤', '👨‍🌾', '👩‍🚒', '🧟‍♂️', '👸', '👼', '🙋‍♀️', '🙋‍♂️', '💃', '🕺', '❤️‍🩹', '🫶', '🫦', '❤️‍🔥', '🐻', '🦊', '🐸', '🐵', '🐒'];
+
+        
+        /**
+         * =========================================
+         * APP INITIALIZATION & AUTHENTICATION
+         * =========================================
+         */
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // This listener checks the user's auth state
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    authContainer.style.display = 'none';
+                    appContainer.style.display = 'flex';
+                    initializeUser(user);
+                } else {
+                    authContainer.style.display = 'flex';
+                    appContainer.style.display = 'none';
+                    currentUserData = null;
+                }
+            });
+
+            setupEventListeners();
+            populateEmojiPicker();
+        });
+
+        // Initialize user data and set up online presence
+        async function initializeUser(user) {
+            const userRef = ref(db, `users/${user.uid}`);
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    currentUserData = { uid: user.uid, ...snapshot.val() };
+                    updateProfileUI(currentUserData);
+                    setupPresence(user.uid);
+                    loadAllData();
+                } else {
+                    console.error("User data not found in DB!");
+                }
+            });
+        }
+
+        function setupPresence(uid) {
+            const userStatusRef = ref(db, `users/${uid}/isOnline`);
+            const lastSeenRef = ref(db, `users/${uid}/lastSeen`);
+            const connectedRef = ref(db, '.info/connected');
+
+            onValue(connectedRef, (snap) => {
+                if (snap.val() === true) {
+                    set(userStatusRef, true);
+                    onDisconnect(userStatusRef).set(false);
+                    onDisconnect(lastSeenRef).set(serverTimestamp());
+                }
+            });
+        }
+        
+        // Load all necessary data after login
+        function loadAllData() {
+            // Listen for all users to populate home screen, friends, etc.
+            onValue(ref(db, 'users'), (snapshot) => {
+                allUsers = snapshot.val() || {};
+                renderAllUsers(allUsers);
+                renderOnlineUsers(allUsers);
+                renderFriendsList(allUsers);
+                renderChatsList(allUsers);
+            });
+        }
+
+
+        /**
+         * =========================================
+         * EVENT LISTENERS
+         * =========================================
+         */
+        function setupEventListeners() {
+            // Auth form toggle
+            document.querySelectorAll('.toggle-form-link').forEach(link => {
+                link.addEventListener('click', toggleAuthForms);
+            });
+
+            // Auth buttons
+            document.getElementById('signup-btn').addEventListener('click', handleSignup);
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+
+            // Navigation
+            document.querySelector('.nav-bar').addEventListener('click', handleNavigation);
+
+            // Modals
+            document.getElementById('view-all-online-btn').addEventListener('click', () => showModal('online-users-modal'));
+            document.getElementById('profile-emoji-picker-btn').addEventListener('click', () => showModal('emoji-picker-modal'));
+            document.getElementById('blocked-users-btn').addEventListener('click', () => {
+                renderBlockedUsersList();
+                showModal('blocked-users-modal');
+            });
+            document.querySelectorAll('.close-modal-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => hideModal(e.target.closest('.modal-overlay').id));
+            });
+
+            // Profile
+            document.getElementById('save-profile-btn').addEventListener('click', handleProfileSave);
+            document.getElementById('emoji-grid').addEventListener('click', handleEmojiSelect);
+            
+            // Chat
+            document.getElementById('send-chat-message-btn').addEventListener('click', handleSendMessage);
+            document.getElementById('chat-message-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSendMessage();
+            });
+            document.getElementById('block-user-btn').addEventListener('click', handleBlockUser);
+
+            // Search
+            document.getElementById('search-input').addEventListener('input', handleSearch);
+        }
+
+        /**
+         * =========================================
+         * AUTHENTICATION HANDLERS
+         * =========================================
+         */
+        function toggleAuthForms() {
+            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+            signupForm.style.display = signupForm.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function handleSignup() {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            if (!name || !email || !password) {
+                alert("Please fill all fields.");
+                return;
+            }
+            
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Save user info to Realtime Database
+                const newUser = {
+                    name: name,
+                    email: email,
+                    bio: "Hi! I'm new here.",
+                    profileEmoji: profileEmojis[Math.floor(Math.random() * profileEmojis.length)],
+                    isOnline: true,
+                };
+                await set(ref(db, 'users/' + user.uid), newUser);
+                // The onAuthStateChanged listener will handle the UI switch.
+            } catch (error) {
+                alert("Signup Error: " + error.message);
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            if (!email || !password) {
+                alert("Please enter email and password.");
+                return;
+            }
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                alert("Login Error: " + error.message);
+            }
+        }
+
+        async function handleLogout() {
+            const userStatusRef = ref(db, `users/${auth.currentUser.uid}/isOnline`);
+            await set(userStatusRef, false);
+            await signOut(auth);
+        }
+
+
+        /**
+         * =========================================
+         * UI & RENDERING
+         * =========================================
+         */
+        
+        function handleNavigation(e) {
+            const targetButton = e.target.closest('.nav-btn');
+            if (!targetButton) return;
+
+            const targetScreenId = targetButton.dataset.target;
+            
+            document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
+            document.getElementById(targetScreenId).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            targetButton.classList.add('active');
+        }
+
+        function showModal(modalId) { document.getElementById(modalId).style.display = 'flex'; }
+        
+        function hideModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId === 'chat-modal' && currentChatPartnerId) {
+                const chatId = getChatId(auth.currentUser.uid, currentChatPartnerId);
+                if (messageListeners[chatId]) {
+                    const chatRef = ref(db, `chats/${chatId}`);
+                    off(chatRef, 'value', messageListeners[chatId]);
+                    delete messageListeners[chatId];
+                }
+                currentChatPartnerId = null;
+            }
+        }
+
+        function renderOnlineUsers(allUsers) {
+            const stackContainer = document.getElementById('online-users-stack-container');
+            const modalListContainer = document.getElementById('modal-online-users-list');
+            stackContainer.innerHTML = '';
+            modalListContainer.innerHTML = '';
+
+            const onlineUsers = Object.entries(allUsers).filter(([uid, user]) => user.isOnline && uid !== auth.currentUser.uid);
+            
+            onlineUsers.slice(0, 5).forEach(([uid, user]) => {
+                stackContainer.innerHTML += `<div class="online-user-icon">${user.profileEmoji}<div class="online-indicator"></div></div>`;
+            });
+            
+            if(onlineUsers.length > 0) {
+                onlineUsers.forEach(([uid, user]) => {
+                    modalListContainer.innerHTML += createUserCardHTML(uid, user, 'message');
+                });
+            } else {
+                modalListContainer.innerHTML = '<p>No one is online right now.</p>';
+            }
+            addUserCardEventListeners();
+        }
+
+        function renderAllUsers(allUsers) {
+            const container = document.getElementById('all-users-list');
+            container.innerHTML = '';
+            const filteredUsers = Object.entries(allUsers).filter(([uid, user]) => {
+                const isMe = uid === auth.currentUser.uid;
+                const iBlockedThem = currentUserData?.blocked?.[uid];
+                const theyBlockedMe = user?.blocked?.[auth.currentUser.uid];
+                return !isMe && !iBlockedThem && !theyBlockedMe;
+            });
+
+            if (filteredUsers.length > 0) {
+                 filteredUsers.forEach(([uid, user]) => {
+                    const isFriend = currentUserData?.friends?.[uid];
+                    const action = isFriend ? 'message' : 'add';
+                    container.innerHTML += createUserCardHTML(uid, user, action);
+                });
+            } else {
+                container.innerHTML = '<p>No other users found.</p>';
+            }
+           addUserCardEventListeners();
+        }
+        
+        function renderFriendsList(allUsers) {
+            const container = document.getElementById('friends-list');
+            container.innerHTML = '';
+            const friendIds = Object.keys(currentUserData?.friends || {});
+            
+            if (friendIds.length > 0) {
+                friendIds.forEach(uid => {
+                    if (allUsers[uid]) {
+                        container.innerHTML += createUserCardHTML(uid, allUsers[uid], 'message');
+                    }
+                });
+            } else {
+                container.innerHTML = '<p>Your friends list is empty.</p>';
+            }
+            addUserCardEventListeners();
+        }
+
+        function renderChatsList(allUsers) {
+            const container = document.getElementById('chats-list');
+            container.innerHTML = '';
+            const friendIds = Object.keys(currentUserData?.friends || {});
+
+            if (friendIds.length > 0) {
+                friendIds.forEach(uid => {
+                    if (allUsers[uid]) {
+                        container.innerHTML += createUserCardHTML(uid, allUsers[uid], 'message', 'Click to chat...');
+                    }
+                });
+            } else {
+                container.innerHTML = '<p>Start a conversation with a friend!</p>';
+            }
+            addUserCardEventListeners();
+        }
+
+        function createUserCardHTML(uid, user, action, subtext) {
+            let buttonHTML = '';
+            if (action === 'add') {
+                buttonHTML = `<button class="action-button add-friend-btn" data-uid="${uid}">Add Friend</button>`;
+            } else if (action === 'message') {
+                buttonHTML = `<button class="action-button open-chat-btn" data-uid="${uid}"><i class="bi bi-chat-dots-fill"></i></button>`;
+            } else if (action === 'unblock') {
+                 buttonHTML = `<button class="action-button unblock-user-btn" data-uid="${uid}">Unblock</button>`;
+            }
+
+            return `
+                <div class="user-card" data-uid="${uid}">
+                    <div class="user-card-emoji">${user.profileEmoji}</div>
+                    <div class="user-card-info">
+                        <h3>${user.name}</h3>
+                        <p>${subtext || user.bio}</p>
+                    </div>
+                    ${buttonHTML}
+                </div>
+            `;
+        }
+        
+        function addUserCardEventListeners() {
+            document.querySelectorAll('.add-friend-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => { e.stopPropagation(); handleAddFriend(e.target.dataset.uid); });
+            });
+            document.querySelectorAll('.open-chat-btn').forEach(el => {
+                el.addEventListener('click', (e) => { e.stopPropagation(); openChat(e.currentTarget.dataset.uid); });
+            });
+            document.querySelectorAll('.user-card-info').forEach(el => {
+                el.addEventListener('click', (e) => { openChat(e.currentTarget.closest('.user-card').dataset.uid); });
+            });
+            document.querySelectorAll('.unblock-user-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => { e.stopPropagation(); handleUnblockUser(e.target.dataset.uid); });
+            });
+        }
+        
+        /**
+         * =========================================
+         * PROFILE MANAGEMENT
+         * =========================================
+         */
+        function populateEmojiPicker() {
+            const grid = document.getElementById('emoji-grid');
+            grid.innerHTML = profileEmojis.map(emoji => `<span class="emoji-option">${emoji}</span>`).join('');
+        }
+
+        function updateProfileUI(userData) {
+            if (!userData) return;
+            document.getElementById('profile-emoji-display').textContent = userData.profileEmoji;
+            document.getElementById('profile-name').value = userData.name;
+            document.getElementById('profile-bio').value = userData.bio;
+        }
+
+        function handleEmojiSelect(e) {
+            if (e.target.classList.contains('emoji-option')) {
+                const selectedEmoji = e.target.textContent;
+                document.getElementById('profile-emoji-display').textContent = selectedEmoji;
+                hideModal('emoji-picker-modal');
+            }
+        }
+        
+        async function handleProfileSave() {
+            const updates = {
+                name: document.getElementById('profile-name').value,
+                bio: document.getElementById('profile-bio').value,
+                profileEmoji: document.getElementById('profile-emoji-display').textContent,
+            };
+
+            try {
+                const userRef = ref(db, `users/${auth.currentUser.uid}`);
+                await set({ ...currentUserData, ...updates });
+                alert("Profile updated successfully!");
+            } catch (error) {
+                alert("Error updating profile: " + error.message);
+            }
+        }
+        
+        function renderBlockedUsersList() {
+            const container = document.getElementById('blocked-users-list-container');
+            container.innerHTML = '';
+            const blockedIds = Object.keys(currentUserData?.blocked || {});
+            
+            if (blockedIds.length > 0) {
+                blockedIds.forEach(uid => {
+                    if (allUsers[uid]) {
+                        container.innerHTML += createUserCardHTML(uid, allUsers[uid], 'unblock');
+                    }
+                });
+            } else {
+                container.innerHTML = '<p>You have not blocked any users.</p>';
+            }
+            addUserCardEventListeners();
+        }
+
+
+        /**
+         * =========================================
+         * FRIENDS & SOCIAL ACTIONS
+         * =========================================
+         */
+        async function handleAddFriend(friendUid) {
+            try {
+                const myFriendsRef = ref(db, `users/${auth.currentUser.uid}/friends/${friendUid}`);
+                await set(myFriendsRef, true);
+                alert("Friend added!");
+            } catch (error) {
+                alert("Error adding friend: " + error.message);
+            }
+        }
+
+        async function handleBlockUser() {
+            if (!currentChatPartnerId) return;
+            if (confirm("Are you sure you want to block this user?")) {
+                 try {
+                    const myBlockedRef = ref(db, `users/${auth.currentUser.uid}/blocked/${currentChatPartnerId}`);
+                    const myFriendRef = ref(db, `users/${auth.currentUser.uid}/friends/${currentChatPartnerId}`);
+                    
+                    await set(myBlockedRef, true);
+                    await set(myFriendRef, null); // remove from friends
+                    
+                    alert("User blocked.");
+                    hideModal('chat-modal');
+                } catch (error) {
+                    alert("Error blocking user: " + error.message);
+                }
+            }
+        }
+
+        async function handleUnblockUser(uid) {
+             try {
+                const myBlockedRef = ref(db, `users/${auth.currentUser.uid}/blocked/${uid}`);
+                await set(myBlockedRef, null);
+                alert("User unblocked.");
+                renderBlockedUsersList();
+            } catch (error) {
+                alert("Error unblocking user: " + error.message);
+            }
+        }
+
+        /**
+         * =========================================
+         * CHAT
+         * =========================================
+         */
+        async function openChat(partnerUid) {
+            currentChatPartnerId = partnerUid;
+            const partnerData = allUsers[partnerUid];
+            
+            if (partnerData) {
+                document.getElementById('chat-with-name').textContent = `Chat with ${partnerData.name}`;
+                showModal('chat-modal');
+                loadMessages(partnerUid);
+            }
+        }
+        
+        function getChatId(uid1, uid2) {
+            return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
+        }
+        
+        function loadMessages(partnerUid) {
+            const chatId = getChatId(auth.currentUser.uid, partnerUid);
+            const messagesContainer = document.getElementById('chat-messages-container');
+            messagesContainer.innerHTML = '';
+            
+            const chatRef = ref(db, `chats/${chatId}`);
+            messageListeners[chatId] = onValue(chatRef, (snapshot) => {
+                messagesContainer.innerHTML = '';
+                const messages = snapshot.val();
+                if (messages) {
+                    Object.values(messages).sort((a, b) => a.timestamp - b.timestamp).forEach(msg => {
+                        const bubble = document.createElement('div');
+                        bubble.classList.add('chat-bubble');
+                        bubble.textContent = msg.text;
+                        bubble.classList.add(msg.senderId === auth.currentUser.uid ? 'sent' : 'received');
+                        messagesContainer.appendChild(bubble);
+                    });
+                } else {
+                    messagesContainer.innerHTML = '<p style="text-align: center; color: #999;">Say hello!</p>';
+                }
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+        
+        async function handleSendMessage() {
+            const input = document.getElementById('chat-message-input');
+            const text = input.value.trim();
+            if (!text || !currentChatPartnerId) return;
+
+            const chatId = getChatId(auth.currentUser.uid, currentChatPartnerId);
+            const message = {
+                text: text,
+                senderId: auth.currentUser.uid,
+                timestamp: serverTimestamp() 
+            };
+            
+            try {
+                const messagesRef = ref(db, `chats/${chatId}`);
+                const newMessageRef = push(messagesRef);
+                await set(newMessageRef, message);
+                input.value = '';
+            } catch (error) {
+                alert("Error sending message: " + error.message);
+            }
+        }
+        
+        /**
+         * =========================================
+         * SEARCH
+         * =========================================
+         */
+         function handleSearch(e) {
+             const query = e.target.value.toLowerCase();
+             document.querySelectorAll('#all-users-list .user-card').forEach(card => {
+                 const name = card.querySelector('h3').textContent.toLowerCase();
+                 card.style.display = name.includes(query) ? 'flex' : 'none';
+             });
+         }
+
+
+    </script>
+</body>
+</html>
